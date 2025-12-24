@@ -1,0 +1,7 @@
+/* Font styling for scrollable sections */
+.scrollable-section-title {
+    font-family: 'Source Serif Pro', serif;
+    font-weight: bold;
+    font-style: italic;
+}
+
