@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>where am i? - 田梓坊</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,300;1,300;0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Source Serif Pro', serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .home-sidebar {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            z-index: 20;
+            padding: 20px;
+        }
+        .home-sidebar a {
+            font-family: 'Sim Sun', serif;
+            font-size: 4rem;
+            color: white;
+            text-decoration: none;
+            display: block;
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .home-sidebar a:hover {
+            opacity: 0.7;
+        }
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .video-background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .text-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        .text-content {
+            max-width: 800px;
+            padding: 40px;
+            color: white;
+            font-size: 1.5rem;
+            line-height: 1.8;
+            text-align: left;
+            font-weight: 300;
+        }
+        .back-link {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            gap: 300px;
+        }
+        .back-tab {
+            font-family: 'Source Serif Pro', serif;
+            font-size: 1.8rem;
+            color: white;
+            text-transform: lowercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .back-tab:hover {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="home-sidebar">
+        <a href="/">田梓坊</a>
+    </div>
+    <div class="back-link">
+        <a href="/where-am-i" class="back-tab">where am i?</a>
+        <a href="#" class="back-tab">publications</a>
+    </div>
+    <div class="video-container">
+        <video class="video-background" autoplay muted loop playsinline>
+            <source src="/media/Language.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="text-overlay">
+        <div class="text-content">
+            I'm Nicole, a student, artist, and writer from San Jose. The hero page is a play on words; my name, 田梓彤/ Tiánzǐ Tóng, bears phonetic resemblance to 田子坊/ Tiánzǐ Fāng, a Shanghai residential area that has now been transformed into modern art studios and an upscale shopping district. Welcome to this assorted subsets of things I find beautiful!
+        </div>
+    </div>
+</body>
+</html>
+
