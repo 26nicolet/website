@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>田梓坊</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,300;1,300;0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
         * {
             margin: 0;
@@ -11,23 +15,266 @@
             box-sizing: border-box;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Sim Sun';
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+        .hero-section {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background-image: url('/media/pupa.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
         }
-        h1 {
-            font-size: 4rem;
+        .hero-tabs {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 300px;
+            z-index: 10;
+        }
+        .hero-tab {
+            font-family: 'Source Serif Pro', serif;
+            font-size: 1.8rem;
+            color: white;
+            text-transform: lowercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .hero-tab:hover {
+            opacity: 0.7;
+        }
+        .hero-section h1 {
+            font-size: 9rem;
             text-align: center;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .prints-section {
+            min-height: 500vh;
+            background-color: #d2b48c;
+            padding: 100px 0;
+            position: relative;
+        }
+        .prints-section h2 {
+            font-size: 9rem;
+            color: #990000;
+            text-align: center;
+            margin-bottom: 50px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .prints-scroll-container {
+            position: sticky;
+            top: 200px;
+            height: 100vh;
+            overflow: hidden;
+            width: 100%;
+        }
+        .prints-horizontal {
+            display: flex;
+            width: fit-content;
+            height: 100%;
+            will-change: transform;
+        }
+        .print-item {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+        }
+        .print-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .print-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            pointer-events: none;
+            width: 100%;
+            height: 100%;
+        }
+        .print-overlay-text {
+            font-family: 'Source Serif Pro', serif;
+            font-weight: 150;
+            font-style: italic;
+            font-size: 6rem;
+            color: white;
+            text-align: left;
+            padding: 30px;
+            margin: 0;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .print-overlay-text.visible {
+            opacity: 1;
+            transform: translateX(0);
         }
     </style>
 </head>
 <body>
-    <h1>Hello World</h1>
+    <div class="hero-section">
+        <div class="hero-tabs">
+            <a href="#" class="hero-tab">where am i?</a>
+            <a href="#" class="hero-tab">publications</a>
+        </div>
+        <h1>田梓坊</h1>
+    </div>
+    <div class="prints-section">
+        <h2 class="scrollable-section-title">prints</h2>
+        <div class="prints-scroll-container">
+            <div class="prints-horizontal" id="printsHorizontal">
+                <div class="print-item">
+                    <img src="/media/seasons/autumn.PNG" alt="Autumn">
+                    <div class="print-overlay">
+                        <p class="print-overlay-text" id="seasonsText"></p>
+                    </div>
+                </div>
+                <div class="print-item">
+                    <img src="/media/seasons/winter.PNG" alt="Winter">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const heroSection = document.querySelector('.hero-section');
+        const printsSection = document.querySelector('.prints-section');
+        const printsHorizontal = document.getElementById('printsHorizontal');
+        const seasonsText = document.getElementById('seasonsText');
+        const printItems = document.querySelectorAll('.print-item');
+        
+        // Cache values that don't change
+        const windowHeight = window.innerHeight;
+        const totalWidth = printItems.length * window.innerWidth;
+        const maxTranslate = totalWidth - window.innerWidth;
+        const pauseThreshold = 0.75;
+        const scrollSpeed = 0.5; // Lower value = slower horizontal scrolling (0.5 = half speed)
+        
+        // Typewriter effect setup
+        const fullText = 'oh, how the seasons change';
+        let ticking = false;
+        
+        // Function to update text with typewriter effect based on progress (0 to 1)
+        function updateTypewriterText(progress) {
+            const totalChars = fullText.length;
+            const charsToShow = Math.floor(progress * totalChars);
+            const visibleText = fullText.substring(0, charsToShow);
+            seasonsText.textContent = visibleText;
+        }
+        
+        function updateScroll() {
+            const heroRect = heroSection.getBoundingClientRect();
+            const printsRect = printsSection.getBoundingClientRect();
+            const sectionHeight = printsSection.offsetHeight;
+            const scrollableHeight = sectionHeight - window.innerHeight;
+            
+            // Only start animation when hero section is fully scrolled past
+            const heroBottom = heroRect.bottom;
+            const printsTop = printsRect.top;
+            
+            // Check if we're in the prints section and hero is fully past
+            if (heroBottom <= 0 && printsTop <= windowHeight && printsTop >= -scrollableHeight) {
+                // Allow full vertical scroll to see the autumn image before horizontal scrolling starts
+                // Start horizontal scroll when section top is at bottom of viewport (allowing full image view)
+                const horizontalStartThreshold = windowHeight;
+                
+                // Only start horizontal scrolling after user has scrolled enough to see full image
+                if (printsTop <= horizontalStartThreshold) {
+                    // Calculate scroll progress starting from when horizontal scrolling begins
+                    // Progress is 0 when horizontal scrolling starts, 1 when section bottom reaches top of viewport
+                    const startPoint = horizontalStartThreshold;
+                    const endPoint = -scrollableHeight;
+                    const totalScrollDistance = startPoint - endPoint;
+                    const currentScrollDistance = startPoint - printsTop;
+                    const rawProgress = Math.max(0, Math.min(1, currentScrollDistance / totalScrollDistance));
+                    
+                    // Reserve pause period for showing the landing page (first image)
+                    let scrollProgress = 0;
+                    let horizontalProgress = 0;
+                    
+                    if (rawProgress > pauseThreshold) {
+                        // After pause, map remaining scroll to horizontal movement
+                        horizontalProgress = Math.min(1, (rawProgress - pauseThreshold) / (1 - pauseThreshold));
+                        scrollProgress = rawProgress;
+                    } else {
+                        // During pause period, stay at first image
+                        scrollProgress = rawProgress;
+                        horizontalProgress = 0;
+                    }
+                    
+                    // Calculate horizontal translation (only after pause)
+                    // Apply scrollSpeed to slow down, but ensure we can reach maxTranslate at the end
+                    // When horizontalProgress = 1.0, we should reach maxTranslate
+                    const translateX = -horizontalProgress * maxTranslate;
+                    printsHorizontal.style.transform = `translate3d(${translateX}px, 0, 0)`;
+                    
+                    // Show text during the pause period and first part of horizontal scroll with typewriter effect
+                    if (scrollProgress < 0.4) {
+                        const textProgress = Math.min(1, scrollProgress / 0.4);
+                        seasonsText.style.opacity = 1;
+                        seasonsText.style.transform = 'translate3d(0, 0, 0)';
+                        seasonsText.classList.add('visible');
+                        updateTypewriterText(textProgress);
+                    } else {
+                        seasonsText.style.opacity = 1;
+                        seasonsText.style.transform = 'translate3d(0, 0, 0)';
+                        updateTypewriterText(1); // Show full text
+                    }
+                } else {
+                    // Section is entering but horizontal scroll hasn't started yet - show first image, no scrolling
+                    // Allow user to scroll vertically to see full autumn image
+                    printsHorizontal.style.transform = 'translate3d(0, 0, 0)';
+                    // Start showing text with typewriter effect as user scrolls down to see the image
+                    const verticalProgress = Math.max(0, Math.min(1, (windowHeight - printsTop) / windowHeight));
+                    if (verticalProgress > 0.3) {
+                        const textProgress = Math.min(1, (verticalProgress - 0.3) / 0.7);
+                        seasonsText.style.opacity = 1;
+                        seasonsText.style.transform = 'translate3d(0, 0, 0)';
+                        updateTypewriterText(textProgress);
+                    } else {
+                        seasonsText.style.opacity = 0;
+                        seasonsText.style.transform = 'translate3d(-100px, 0, 0)';
+                        updateTypewriterText(0);
+                    }
+                }
+            } else {
+                // Reset position when not in the active scroll zone
+                printsHorizontal.style.transform = 'translate3d(0, 0, 0)';
+                seasonsText.style.opacity = 0;
+                seasonsText.style.transform = 'translate3d(-100px, 0, 0)';
+                updateTypewriterText(0);
+            }
+            
+            ticking = false;
+        }
+        
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(updateScroll);
+                ticking = true;
+            }
+        }, { passive: true });
+        
+        // Initial call
+        updateScroll();
+    </script>
 </body>
 </html>
 
